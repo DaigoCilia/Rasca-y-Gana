@@ -7,8 +7,8 @@ super("Inicio");
 
 preload(){
 
-this.load.image("fondoInicio","../img/Fondo_2.png");
-this.load.image("boton","../img/boton.png");
+this.load.image("fondoInicio","Fondo_2.png");
+this.load.image("boton","boton.png");
 
 }
 
@@ -52,13 +52,13 @@ super("Juego");
 
 preload(){
 
-this.load.image("raspado","../img/raspado.png");
-this.load.image("brush","../img/Brush.png");
+this.load.image("raspado","raspado.png");
+this.load.image("brush","Brush.png");
 
-this.load.image("sonrisa","../img/Premio_1.png");
-this.load.image("disfraz","../img/Premio_2.png");
-this.load.image("sopresa","../img/Premio_3.png");
-this.load.image("mueca","../img/Premio_4.png");
+this.load.image("sonrisa","Premio_1.png");
+this.load.image("disfraz","Premio_2.png");
+this.load.image("sopresa","Premio_3.png");
+this.load.image("mueca","Premio_4.png");
 
 this.load.image("fondoBoleto","../img/FondoBoleto.png");//IMAGEN DE FONDO tipo boleto de loteria
 
@@ -238,5 +238,6 @@ parent:"game",
 scene:[Inicio,Juego]
 
 };
+
 
 const game = new Phaser.Game(config);
