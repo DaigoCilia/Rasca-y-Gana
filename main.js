@@ -242,3 +242,4 @@ scene:[Inicio,Juego]
 
 const game = new Phaser.Game(config);
 
+
