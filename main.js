@@ -60,7 +60,7 @@ this.load.image("disfraz","Premio_2.png");
 this.load.image("sopresa","Premio_3.png");
 this.load.image("mueca","Premio_4.png");
 
-this.load.image("fondoBoleto","../img/FondoBoleto.png");//IMAGEN DE FONDO tipo boleto de loteria
+this.load.image("fondoBoleto","FondoBoleto.png");//IMAGEN DE FONDO tipo boleto de loteria
 
 }
 
@@ -241,3 +241,4 @@ scene:[Inicio,Juego]
 
 
 const game = new Phaser.Game(config);
+
