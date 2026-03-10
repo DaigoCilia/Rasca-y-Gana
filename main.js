@@ -7,8 +7,8 @@ super("Inicio");
 
 preload(){
 
-this.load.image("fondoInicio","Fondo_2.png");
-this.load.image("boton","boton.png");
+this.load.image("fondoInicio","../img/Fondo_2.png");
+this.load.image("boton","../img/boton.png");
 
 }
 
@@ -51,93 +51,118 @@ super("Juego");
 }
 
 preload(){
+this.load.image("raspado","../img/raspado.png");
 
-this.load.image("raspado","raspado.png");
-this.load.image("brush","Brush.png");
-
-this.load.image("sonrisa","Premio_1.png");
-this.load.image("disfraz","Premio_2.png");
-this.load.image("sopresa","Premio_3.png");
-this.load.image("mueca","Premio_4.png");
-
-this.load.image("fondoBoleto","FondoBoleto.png");//IMAGEN DE FONDO tipo boleto de loteria
-
+this.load.image("sonrisa","../img/Premio_1.png");
+this.load.image("disfraz","../img/Premio_2.png");
+this.load.image("sopresa","../img/Premio_3.png");
+this.load.image("mueca","../img/Premio_4.png");
+this.load.image("fondoBoleto","../img/FondoBoleto.png");//IMAGEN DE FONDO tipo boleto de loteria
 }
 
 create(){
-// Fondo adaptado a cualquier pantalla
+    // Fondo de boleto
         this.add.image(0,0,"fondoBoleto")
             .setOrigin(0)
             .setDisplaySize(this.scale.width, this.scale.height);
 
-this.premios=["sonrisa","disfraz","sopresa","mueca"];
+let g = this.make.graphics({x:0,y:0,add:false});
+g.fillStyle(0xffffff,1);
+g.fillCircle(32,32,32);
+g.generateTexture("brush",64,64);
+g.destroy();
 
+this.premios=["sonrisa","disfraz","sopresa","mueca"]; //imagenes de premio
 this.resultados=[];
 this.tarjetas=[];
 this.descubiertas=0;
 
 
 // contador circular
-this.grafica=this.add.graphics();
-
-this.textoPorcentaje=this.add.text(430,70,"0%",{
+this.grafica = this.add.graphics();
+this.textoPorcentaje = this.add.text(430,70,"0%",{
 fontSize:"28px",
-fontFamily: "New Rocker",
+fontFamily: "New Rocker", // nueva fuente
 color:"#ffffff"
 });
 
 
-let posiciones=[200,450,700];
+let posiciones = [200,450,700];
+
+if(Math.random() < 0.3){ 
+    // 30% de probabilidad de ganar
+    let premio = Phaser.Utils.Array.GetRandom(this.premios);
+    this.resultados = [premio, premio, premio];
+}else{
+    // pierde
+    this.resultados = [
+        Phaser.Utils.Array.GetRandom(this.premios),
+        Phaser.Utils.Array.GetRandom(this.premios),
+        Phaser.Utils.Array.GetRandom(this.premios)
+    ];
+}
 
 for(let i=0; i<3; i++){
-    let premio = Phaser.Utils.Array.GetRandom(this.premios);
-    this.resultados.push(premio);
+let premio = this.resultados[i];
+this.add.image(posiciones[i],350,premio).setScale(0.5);
 
-    this.add.image(posiciones[i], 350, premio).setScale(0.5);
+let rt = this.add.renderTexture(
+posiciones[i],
+350,
+200,
+200
+);
 
-    let rt = this.add.renderTexture(posiciones[i], 350, 200, 200);
-    //no es necesario crear un add image eso es lo que confunde a phaser por eso el error del cuadro verde
-    // la rt se añade por sis ola al proyecto
-    rt.setOrigin(0.5); //se alinea con las imagenes
+rt.draw("raspado",0,0); 
 
-    rt.draw("raspado", 0, 0); //llama a la imagen
+let tarjeta=this.add.image(posiciones[i],350);
 
-    this.tarjetas.push({
-        rt: rt,
-        porcentaje: 0,
-        descubierta: false
-    });
+this.tarjetas.push({
+rt:rt,
+img:tarjeta,
+porcentaje:0,
+descubierta:false
+});
 }
+
 
 // raspar
-this.input.on("pointermove", (pointer) => {
-    if (pointer.isDown) {
-        this.tarjetas.forEach(t => {
-            if (t.descubierta) return;
+this.input.on("pointermove",(pointer)=>{
+if(pointer.isDown){
+this.tarjetas.forEach(t=>{
+if(t.descubierta) return;
 
-            let localX = pointer.x - (t.rt.x - 100);
-            let localY = pointer.y - (t.rt.y - 100);
+let localX=pointer.x-(t.img.x-100);
+let localY=pointer.y-(t.img.y-100);
 
-            if (localX > 0 && localX < 200 && localY > 0 && localY < 200) {
+if(localX>0 && localX<200 && localY>0 && localY<200){
 
-                t.rt.erase("brush", localX, localY);
-                
-                t.porcentaje += 0.5; 
-                this.actualizarCirculo(t.porcentaje);
+t.rt.erase("brush",localX,localY,1);
 
-                if (t.porcentaje > 70) {
-                    t.descubierta = true;
-                    t.rt.destroy(); 
-                    this.descubiertas++;
-                    if (this.descubiertas === 3) this.verificarPremio();
-                }
-            }
-        });
-    }
-});
+t.porcentaje = Math.min(t.porcentaje + 0.3, 100);
 
+this.actualizarCirculo(t.porcentaje);
+
+if(t.porcentaje>90){
+
+t.descubierta=true;
+
+t.rt.erase("brush",100,100,10);
+
+t.rt.clear();
+
+this.descubiertas++;
+
+if(this.descubiertas===3){
+
+this.verificarPremio();
 }
-
+}
+}
+});
+}
+});
+}
 
 
 // contador circular
@@ -154,7 +179,7 @@ this.grafica.arc(
 80,
 40,
 Phaser.Math.DegToRad(270),
-Phaser.Math.DegToRad(270 + p*3.6),
+Phaser.Math.DegToRad(270 + p * 3.6),
 false
 );
 
@@ -165,7 +190,6 @@ this.textoPorcentaje.setText(Math.floor(p)+"%");
 }
 
 
-
 // verificar premios
 verificarPremio(){
 
@@ -174,48 +198,35 @@ let mensaje="";
 if(
 this.resultados[0]===this.resultados[1] &&
 this.resultados[1]===this.resultados[2]
+
 ){
-
 mensaje="🎉YOU WON🎉";
-
 }else{
-
 mensaje="😢 Try Again";
-
 }
-
 this.add.text(360,200,mensaje,{
 fontSize:"40px",
-fontFamily: "New Rocker",
+fontFamily: "New Rocker", //nueva fuente
 color:"#ffd000"
 }).setOrigin(0.2);
-
 this.botonReiniciar();
-
 }
-
 
 
 // boton reiniciar
 botonReiniciar(){
-
 let boton=this.add.text(380,520,"RESTART",{
 fontSize:"32px",
-fontFamily: "New Rocker",
-color:"#9e0000",
+fontFamily: "New Rocker", //nueva fuente
+color:"#9e0000", //color de letra
 backgroundColor:"#ffffff",
 padding:10
 })
 .setInteractive();
-
 boton.on("pointerdown",()=>{
-
 this.scene.restart();
-
-}).setOrigin(0.2);
-
+});
 }
-
 }
 
 
@@ -239,7 +250,4 @@ scene:[Inicio,Juego]
 
 };
 
-
 const game = new Phaser.Game(config);
-
-
