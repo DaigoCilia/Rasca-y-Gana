@@ -1,7 +1,7 @@
 {
 "name": "Raspa y Gana",
 "short_name": "RyG",
-"start_url": "index.html",
+"start_url": "./index.html",
 "display": "standalone",
 "orientation": "landscape",
 "background_color": "#111111",
@@ -21,3 +21,4 @@
   ]
 
 }
+
